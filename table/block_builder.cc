@@ -80,10 +80,11 @@ void BlockBuilder::Add(const Slice& key, const Slice& value) {
   if (counter_ < options_->block_restart_interval) {
     // See how much sharing to do with previous string
     if (adgMod::MOD != 6 && adgMod::MOD != 7 && adgMod::MOD != 9)  {
-//        const size_t min_length = std::min(last_key_piece.size(), key.size());
-//        while ((shared < min_length) && (last_key_piece[shared] == key[shared])) {
-//            shared++;
-//        }
+        // See how many prefix character the current key and the last key has
+        const size_t min_length = std::min(last_key_piece.size(), key.size());
+        while ((shared < min_length) && (last_key_piece[shared] == key[shared])) {
+            shared++;
+        }
     }
   } else {
     // Restart compression
@@ -98,7 +99,9 @@ void BlockBuilder::Add(const Slice& key, const Slice& value) {
   PutVarint32(&buffer_, value.size());
 
   // Add string delta to buffer_ followed by value
+  // String delta = the remaining string that are not shared
   buffer_.append(key.data() + shared, non_shared);
+  // Add the value
   buffer_.append(value.data(), value.size());
 
   // Update state
