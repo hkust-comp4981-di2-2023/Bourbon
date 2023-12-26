@@ -579,6 +579,7 @@ Status DBImpl::WriteLevel0Table(MemTable* mem, VersionEdit* edit,
   return s;
 }
 
+// Call Prepare Learn after compacting memtable
 int DBImpl::CompactMemTable() {
   mutex_.AssertHeld();
 //  assert(false);
@@ -957,6 +958,7 @@ Status DBImpl::OpenCompactionOutputFile(CompactionState* compact) {
 }
 
 // After a compacted file is dumped
+// The file will be queued after compaction completed
 Status DBImpl::FinishCompactionOutputFile(CompactionState* compact,
                                           Iterator* input) {
   assert(compact != nullptr);

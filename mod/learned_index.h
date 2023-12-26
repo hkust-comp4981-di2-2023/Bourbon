@@ -72,6 +72,7 @@ namespace adgMod {
         std::atomic<bool> learned;
         std::atomic<bool> aborted;
         bool learned_not_atomic;
+        // Dummy variable
         std::atomic<bool> learning;
         // some params for level triggering policy, deprecated
         int allowed_seek;
@@ -124,11 +125,23 @@ namespace adgMod {
         double GetError() const;
         
         // Learning function and checker (check if this model is available)
+
+        // Perform learn operation
         bool Learn();
+
+        // Check whether a model is learned or not (general)
         bool Learned();
+
+        // Same as above, except this is for level model
         bool Learned(Version* version, int v_count, int level);
+
+        // Same as above, except this is for file model
         bool Learned(Version* version, int v_count, FileMetaData* meta, int level);
+
+        // Learn at level layer
         static void LevelLearn(void* arg, bool no_lock=false);
+
+        // Learn at file layer
         static uint64_t FileLearn(void* arg);
 
         // Load all the keys in the file/level

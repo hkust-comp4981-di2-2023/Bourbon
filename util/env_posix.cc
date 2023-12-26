@@ -545,7 +545,7 @@ class PosixEnv : public Env {
 
 
   // test use only
-  void NewRandomAccessFileLearned(const std::string& filename, RandomAccessFile** result) {
+  void NewRandomAccessFileLearned(const std::string& filename, RandomAccessFile** result) override {
     int fd = ::open(filename.c_str(), O_RDONLY);
     //*result = new PosixRandomAccessFile(filename, fd, &fd_limiter_);
 
@@ -790,7 +790,7 @@ class PosixEnv : public Env {
     int64_t time_diff = 1000000;
     prepare_queue_mutex.Lock();
 
-    // dead loop
+    // dead loop (busy wait)
     while (true) {
       while (learning_prepare.empty()) {
         preparing_queue_cv.Wait();
@@ -823,8 +823,11 @@ class PosixEnv : public Env {
         auto& top = learn_pq.top().second;
         int level = top.second.first;
         FileMetaData* meta = top.second.second;
+        // Create an instance of LearnedIndexData*
+        // which is used
         adgMod::LearnedIndexData* model = adgMod::file_data->GetModel(meta->number);
         prepare_queue_mutex.Unlock();
+        // Learn function calls entered here
         adgMod::LearnedIndexData::FileLearn(new adgMod::MetaAndSelf{nullptr, 0, meta, model, level});
         prepare_queue_mutex.Lock();
         learn_pq.pop();
@@ -840,11 +843,13 @@ class PosixEnv : public Env {
     }
   }
 
+  // The global entry pt for the learning process
   static void PrepareLearnEntryPoint(PosixEnv* env) {
     env->PrepareLearn();
   }
 
-  void PrepareLearning(uint64_t time_start, int level, FileMetaData* meta) {
+  // This one is the actual implementation of the PrepareLearn() functions
+  void PrepareLearning(uint64_t time_start, int level, FileMetaData* meta) override{
     if (adgMod::fresh_write || (adgMod::MOD != 6 && adgMod::MOD != 7 && adgMod::MOD != 9)) return;
     MutexLock guard(&prepare_queue_mutex);
     if (!preparing_thread_started) {

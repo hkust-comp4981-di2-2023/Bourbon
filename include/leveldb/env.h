@@ -192,6 +192,7 @@ class LEVELDB_EXPORT Env {
   // Sleep/delay the thread for the prescribed number of micro-seconds.
   virtual void SleepForMicroseconds(int micros) = 0;
 
+  // Learned Index Function for the Environments
   virtual void ClearPendingLearning() {};
   virtual void ScheduleLearning(void (*background_work_function)(void*), void* background_work_arg, int priority) {};
   virtual void NewRandomAccessFileLearned(const std::string& filename, RandomAccessFile** result) {};

@@ -87,6 +87,7 @@ class VersionEdit {
 
  private:
   friend class VersionSet;
+  // This one is just added to suit the needs for the Learned Index
   friend class DBImpl;
 
   typedef std::set<std::pair<int, uint64_t> > DeletedFileSet;
