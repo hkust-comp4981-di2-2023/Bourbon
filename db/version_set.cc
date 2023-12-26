@@ -1771,7 +1771,7 @@ namespace leveldb {
         // push the maximun key in to the data points
         return true;
     }
-
+    // Write Level Model + All models in that level
     void Version::WriteLevelModel() {
         //return;
         for (int i = 0; i < config::kNumLevels; ++i) {
@@ -1782,7 +1782,7 @@ namespace leveldb {
             }
         }
     }
-
+    // Read Level Model + All models in that level
     void Version::ReadLevelModel() {
         uint64_t file_max = 0;
         for (int i = 0; i < config::kNumLevels; ++i) {

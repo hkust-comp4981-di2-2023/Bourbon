@@ -237,6 +237,8 @@ bool LearnedIndexData::FillData(Version* version, FileMetaData* meta) {
   return false;
 }
 
+// Store the model as a file
+// Write when the Version object destructor is called
 void LearnedIndexData::WriteModel(const string& filename) {
   if (!learned.load()) return;
 
@@ -255,6 +257,7 @@ void LearnedIndexData::WriteModel(const string& filename) {
   }
 }
 
+// Read the model from a file
 void LearnedIndexData::ReadModel(const string& filename) {
   std::ifstream input_file(filename);
 

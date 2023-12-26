@@ -617,6 +617,7 @@ int DBImpl::CompactMemTable() {
 
     auto time = instance->PauseTimer(16, true);
     int level = edit.new_files_[0].first;
+    // After compaction: Do sth
     adgMod::compaction_counter_mutex.Lock();
     adgMod::events[0].push_back(new CompactionEvent(time, to_string(level)));
     adgMod::levelled_counters[5].Increment(edit.new_files_[0].first, time.second - time.first);
@@ -955,6 +956,7 @@ Status DBImpl::OpenCompactionOutputFile(CompactionState* compact) {
   return s;
 }
 
+// After a compacted file is dumped
 Status DBImpl::FinishCompactionOutputFile(CompactionState* compact,
                                           Iterator* input) {
   assert(compact != nullptr);

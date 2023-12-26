@@ -294,6 +294,8 @@ uint64_t Table::ApproximateOffsetOf(const Slice& key) const {
   return result;
 }
 
+
+// New method for the current table to fill the data so that the learn model could be learnt
 void Table::FillData(const ReadOptions& options, adgMod::LearnedIndexData* data) {
     if (data->filled) return;
     //data->string_keys.clear();
@@ -301,8 +303,11 @@ void Table::FillData(const ReadOptions& options, adgMod::LearnedIndexData* data)
   Status status;
   Block::Iter* index_iter = dynamic_cast<Block::Iter*>(rep_->index_block->NewIterator(rep_->options.comparator));
   //uint64_t num_points = 0;
+
+  // Loop through all compressed chunks via Iterator
   for (uint32_t i = 0; i < index_iter->num_restarts_; ++i) {
     index_iter->SeekToRestartPoint(i);
+    // The iterator will goto the next data entry
     index_iter->ParseNextKey();
     assert(index_iter->Valid());
     Block::Iter* block_iter = dynamic_cast<Block::Iter*>(BlockReader(this, options, index_iter->value()));
@@ -311,10 +316,13 @@ void Table::FillData(const ReadOptions& options, adgMod::LearnedIndexData* data)
     int num_entries_this_block = 0;
     for (block_iter->SeekToRestartPoint(0); block_iter->ParseNextKey(); ++num_entries_this_block) {
         ParseInternalKey(block_iter->key(), &parsed_key);
+        // Result is the same as push_back, but it first allocates space, then construct the object
+        // Fill the key data to the Learned Model Data so that it could learn
         data->string_keys.emplace_back(parsed_key.user_key.data(), parsed_key.user_key.size());
     }
     //num_points += num_entries_this_block;
 
+    // Need to decode this code segments
     if (!adgMod::block_num_entries_recorded) {
         adgMod::block_num_entries = num_entries_this_block;
         adgMod::block_num_entries_recorded = true;

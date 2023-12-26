@@ -177,6 +177,7 @@ public:
 
         uint32_t left = 0;
         uint32_t right = num_restarts_ - 1;
+        // Some timer here maybe?
         adgMod::Stats *instance = adgMod::Stats::GetInstance();
         while (left < right) {
             uint32_t mid = (left + right + 1) / 2;
@@ -223,6 +224,8 @@ public:
     }
 
 private:
+    // Seems like this method is not used
+    // Use public seek instead
     inline void Seek(uint32_t left, uint32_t right, const Slice& target) {
 //        if (right > num_restarts_ - 1)
 //            right = num_restarts_ - 1;
